@@ -16,7 +16,6 @@ export default function criarCardProduto(produto, onCarrinhoAlterado) {
     card.classList.add('carrinho');
   }
 
-
   const imageContainer = document.createElement('div');
   imageContainer.className = 'position-relative overflow-hidden';
 
@@ -28,26 +27,26 @@ export default function criarCardProduto(produto, onCarrinhoAlterado) {
   const btnContainer = document.createElement('div');
   btnContainer.className = 'position-absolute top-0 end-0 m-2';
 
-  const button = criarBotaoFavorito(favorito);
+  const button = criarBotaoFavorito(carrinho);
 
   button.addEventListener('click', () => {
-    favorito = !favorito;
+    carrinho = !carrinho;
 
     // muda visual
-    card.classList.toggle('favorito', favorito);
+    card.classList.toggle('carrinho', carrinho);
 
     // salva/remove
-    if (favorito) {
-      salvarFavorito(produto);
+    if (carrinho) {
+      salvarCarrinho(produto);
     } else {
-      removerFavorito(produto);
+      removerCarrinho(produto);
     }
 
     // callback
-    if (typeof onFavoritoAlterado === 'function') {
-      onFavoritoAlterado({
+    if (typeof onCarrinhoAlterado === 'function') {
+      onCarrinhoAlterado({
         produto,
-        favorito
+        carrinho
       });
     }
   });
@@ -77,8 +76,8 @@ export default function criarCardProduto(produto, onCarrinhoAlterado) {
   btnAcao.innerText = produto.acao || 'Adicionar';
 
   btnAcao.addEventListener('click', () => {
-    if (typeof onFavoritoAlterado === 'function') {
-      onFavoritoAlterado({
+    if (typeof onCarrinhoAlterado === 'function') {
+      onCarrinhoAlterado({
         produto,
         acao: 'click'
       });
