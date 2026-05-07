@@ -48,6 +48,7 @@ export class ItensPedido {
     set pedidoId(value: number) {
         this.validarIdAuxiliar(value);
         this._pedidoId = value; 
+        console.log("TESTE");
     }
 
     set produtoId(value: number) {
