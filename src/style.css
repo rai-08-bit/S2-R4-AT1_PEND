@@ -1,0 +1,125 @@
+:root {
+  --bg: #ecf1f8;
+  --blue: #003a99;
+  --yellow: #f6af3b;
+  --border: #d8dfe8;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+#app {
+  width: 1100px;
+  max-width: 100%;
+  margin: auto;
+  text-align: center;
+  border-inline: 1px solid var(--border);
+}
+
+#center {
+  padding: 50px 20px;
+}
+
+h1,
+h2 {
+  color: var(--blue);
+}
+
+.hero {
+  position: relative;
+}
+
+.base {
+  width: 170px;
+}
+
+.framework {
+  position: absolute;
+  top: 35px;
+  left: 50%;
+  width: 30px;
+  transform: translateX(-50%);
+}
+
+.vite {
+  position: absolute;
+  top: 95px;
+  left: 50%;
+  width: 30px;
+  transform: translateX(-50%);
+}
+
+.counter {
+  background: var(--yellow);
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+#next-steps {
+  display: flex;
+  padding: 30px;
+  gap: 20px;
+}
+
+#docs,
+#social {
+  flex: 1;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  margin-top: 15px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+a {
+  flex: 1;
+  background: var(--bg);
+  padding: 10px;
+  border-radius: 6px;
+  text-decoration: none;
+  color: var(--blue);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo,
+.button-icon {
+  width: 20px;
+}
+
+.comprar,
+#checkout {
+  background: var(--yellow);
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.ticks {
+  height: 2px;
+  background: var(--border);
+}
+
+#spacer {
+  height: 50px;
+}
