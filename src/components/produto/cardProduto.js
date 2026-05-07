@@ -1,22 +1,22 @@
-import { criarBotaoFavorito } from '../ui/button.component';
+import { criarBotaoCarrinho } from './button.component.js';
 import {
-  salvarFavorito,
-  removerFavorito,
-  ehFavorito
-} from '../../storage/produto/favoritos.storage';
+  salvarCarrinho,
+  removerCarrinho,
+  noCarrinho
+} from '../../storage/produto/carrinho.storage';
 
 // Card de produto
-export default function criarCardProduto(produto, onFavoritoAlterado) {
-  let favorito = ehFavorito(produto);
+export default function criarCardProduto(produto, onCarrinhoAlterado) {
+  let carrinho = noCarrinho(produto);
 
   const card = document.createElement('div');
   card.className = 'card produto-card border-0';
 
-  if (favorito) {
-    card.classList.add('favorito');
+  if (carrinho) {
+    card.classList.add('carrinho');
   }
 
-  // container da imagem
+
   const imageContainer = document.createElement('div');
   imageContainer.className = 'position-relative overflow-hidden';
 
