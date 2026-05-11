@@ -1,35 +1,15 @@
 import { ResultSetHeader, RowDataPacket } from 'mysql2';
-import { Categoria } from '../models/Categorias';
 import { connection } from '../configs/Database';
 import buildWhere from './helpers/buildWhere.repository';
+import Produto from '../models/Produtos';
 
-
-const categoriaRepository = {
-    create: async (categoria: Categoria): Promise<ResultSetHeader> => {
-        const sql = 'INSERT INTO categorias (NomeCategoria, DescricaoCategoria) VALUES (?,?)';
-        const values = [categoria.nomeCategoria, categoria.descricao];
+const produtoRepository = {
+    create: async (produto: Produto): Promise<ResultSetHeader> => {
+        const sql = 'INSERT INTO produtos (IdCategoria, NomeProduto, DescricaoProduto, PrecoProduto, QuantidadeEstoque, VinculoImagem) VALUES (?,?,?,?,?)';
+        const values = [produto.idCategoria ,produto.nomeProduto, produto.descricaoProduto, produto.precoProduto, produto.quantidadeEstoque, produto.vinculoImagem];
         const [rows] = await connection.execute<ResultSetHeader>(sql, values);
         return rows;
     },
-    /**
-         * Busca categorias no banco de dados.
-         * 
-         * @param where Objeto contendo os filtros da query
-         * Exemplo:
-         * {
-         *   IdCategoria: 1,
-         *   Ativo: 1
-         * }
-         * 
-         * @param operator Operador lógico entre os filtros
-         *
-         * Pode ser:
-         * - 'AND'
-         * - 'OR'
-         * 
-         * @returns Lista de categorias encontradas
-         */
-
     read: async (
         where?: Record<string, any>,
         operator: 'AND' | 'OR' = 'AND'
@@ -43,7 +23,7 @@ const categoriaRepository = {
          */
         let sql = `
         SELECT *
-        FROM categorias
+        FROM produtos
         WHERE 1=1
     `;
 
@@ -83,17 +63,15 @@ const categoriaRepository = {
          */
         return rows;
     },
-    update: async (categoria: Categoria): Promise<ResultSetHeader> => {
-        const sql = 'UPDATE categorias SET NomeCategoria=?, DescricaoCategoria=? WHERE IdCategoria=?';
-        const values = [categoria.nomeCategoria, categoria.descricao, categoria.idCategoria];
+    update: async (produto: Produto): Promise<ResultSetHeader> => {
+        const sql = `UPDATE categorias SET NomeCategoria=?, DescricaoCategoria=? WHERE IdCategoria=?`;
+        const values = [produto.idCategoria, produto.nomeProduto, produto.descricaoProduto, produto.precoProduto, produto.quantidadeEstoque, produto.vinculoImagem, produto.idProduto];
         const [rows] = await connection.execute<ResultSetHeader>(sql, values);
         return rows;
     },
     delete: async (id: number): Promise<boolean> => {
-        const sql = 'DELETE FROM categoria WHERE idCategoria = ?';
+        const sql = 'DELETE FROM produtos WHERE IdProduto = ?';
         const [result] = await connection.execute<ResultSetHeader>(sql, [id]);
         return result.affectedRows > 0;
     }
 }
-
-export default categoriaRepository;
