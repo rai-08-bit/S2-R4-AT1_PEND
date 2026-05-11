@@ -1,9 +1,10 @@
-import { criarBotaoCarrinho } from './button.component.js';
+import  criarBotaoCarrinho  from './button.component.js';
+import criarImagemProduto from './imagem.component.js';
 import {
   salvarCarrinho,
   removerCarrinho,
   noCarrinho
-} from '../../storage/produto/carrinho.storage';
+} from '../../storage/produto/carrinho.storage.js';
 
 // Card de produto
 export default function criarCardProduto(produto, onCarrinhoAlterado) {
@@ -16,18 +17,18 @@ export default function criarCardProduto(produto, onCarrinhoAlterado) {
     card.classList.add('carrinho');
   }
 
+  // Imagem produto
   const imageContainer = document.createElement('div');
   imageContainer.className = 'position-relative overflow-hidden';
 
-  const imagem = document.createElement('img');
-  imagem.src = produto.imagem;
+  const imagem = criarImagemProduto(produto);
   imagem.classList.add('card-img-top');
 
-  // botão favorito
+  // botão Carrinho
   const btnContainer = document.createElement('div');
   btnContainer.className = 'position-absolute top-0 end-0 m-2';
 
-  const button = criarBotaoFavorito(carrinho);
+  const button = criarBotaoCarrinho(carrinho);
 
   button.addEventListener('click', () => {
     carrinho = !carrinho;

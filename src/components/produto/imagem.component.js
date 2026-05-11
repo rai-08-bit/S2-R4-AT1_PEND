@@ -1,6 +1,10 @@
-const imageContainer = document.createElement('div');
-  imageContainer.className = 'position-relative overflow-hidden';
+export default function criarImagemProduto(produto) {
+  const img = document.createElement('img');
+  img.alt = produto.nomeProduto;
+  img.className = '';
 
-  const imagem = document.createElement('img');
-  imagem.src = produto.imagem;
-  imagem.classList.add('card-img-top');
+  img.style.height = '360px';
+  img.style.objectFit = produto.vinculoImagemProduto ? 'cover' : '';
+
+  img.src = produto.vinculoImagemProduto ? produto.vinculoImagemProduto : '../../../public/noImage.png';
+}
