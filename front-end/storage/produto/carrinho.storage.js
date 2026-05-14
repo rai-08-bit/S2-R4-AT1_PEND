@@ -1,4 +1,4 @@
-export function salvarFavorito(produto) {
+export function salvarProduto(produto) {
     const carrinho = JSON.parse(
         localStorage.getItem('carrinho') || '[]'
     );
@@ -14,7 +14,7 @@ export function salvarFavorito(produto) {
     }
 }
 
-export function removerFavorito(produto) {
+export function removerProduto(produto) {
     const carrinho = JSON.parse(
         localStorage.getItem('produtos') || '[]'
     );
@@ -26,7 +26,7 @@ export function removerFavorito(produto) {
     localStorage.setItem('carrinho', JSON.stringify(carrinhoAtualizados));
 }
 
-export function estaCarrinho(produto) {
+export function estaNoCarrinho(produto) {
     const carrinho = JSON.parse(
         localStorage.getItem('carrinho') || '[]'
     );
