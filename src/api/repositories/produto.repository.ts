@@ -75,3 +75,4 @@ const produtoRepository = {
         return result.affectedRows > 0;
     }
 }
+export default produtoRepository
