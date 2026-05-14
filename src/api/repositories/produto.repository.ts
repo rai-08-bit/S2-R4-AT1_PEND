@@ -64,7 +64,7 @@ const produtoRepository = {
         return rows;
     },
     update: async (produto: Produto): Promise<ResultSetHeader> => {
-        const sql = `UPDATE categorias SET NomeCategoria=?, DescricaoCategoria=? WHERE IdCategoria=?`;
+        const sql = `UPDATE produtps SET NomeProduto=?, DescricaoProduto=?, PrecoProduto=?, QuantidadeEstoque=?, VinculoImagem=? WHERE IdCategoria=?`;
         const values = [produto.idCategoria, produto.nomeProduto, produto.descricaoProduto, produto.precoProduto, produto.quantidadeEstoque, produto.vinculoImagem, produto.idProduto];
         const [rows] = await connection.execute<ResultSetHeader>(sql, values);
         return rows;
