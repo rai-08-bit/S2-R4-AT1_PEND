@@ -1,10 +1,12 @@
 import { Router } from "express";
-import produtoController from "../controllers/produto";
-const produtoRoutes = Router();
+import pedidoController from "../controllers/pedido.controller";
+const pedidoRoutes = Router();
 
-produtoRoutes.post('/', produtoController.criar);
-produtoRoutes.get('/', produtoController.listar);
-produtoRoutes.put('/', produtoController.atualizar);
-produtoRoutes.delete('/:id', produtoController.excluir);
+pedidoRoutes.post('/', pedidoController.criar);
+pedidoRoutes.get('/', pedidoController.listar);
+pedidoRoutes.put('/remocao', pedidoController.atualizarRemItem);
+pedidoRoutes.put('/adicao', pedidoController.atualizarAddItem);
+pedidoRoutes.put('/status', pedidoController.atualizarStatus)
+pedidoRoutes.delete('/:id', pedidoController.excluir);
 
-export default produtoRoutes;
+export default pedidoRoutes;
