@@ -2,7 +2,7 @@ import { ResultSetHeader, RowDataPacket } from 'mysql2';
 import { connection } from '../configs/Database';
 import { ItensPedido } from '../models/Itens_Pedido';
 
-export const itensPedidoRepository = {
+const itensPedidoRepository = {
     // 1. CRIAR ITENS E ATUALIZAR TOTAL
     criarItem: async (idPedido: number, itensPedido: ItensPedido[]) => {
         const conn = await connection.getConnection();
@@ -17,7 +17,7 @@ export const itensPedidoRepository = {
             for (const item of itensPedido) {
                 const values = [
                     idPedido,
-                    item.produtoId, 
+                    item.produtoId,
                     item.quantidade,
                     item.valor,
                 ];
@@ -54,12 +54,29 @@ export const itensPedidoRepository = {
         const [rows] = await connection.execute<RowDataPacket[]>(sql, [idPedido]);
 
         return rows.map(row => new ItensPedido(
-            row.IdItem_Pedido, 
-            row.FK_IdPedido,    
-            row.FK_IdProduto, 
+            row.IdItem_Pedido,
+            row.FK_IdPedido,
+            row.FK_IdProduto,
             row.Valor,
             row.Quantidade
         ));
+    },
+
+    findById: async (idItemPedido: number): Promise<ItensPedido | null> => {
+        const sql = 'SELECT * FROM Itens_Pedido WHERE IdItensPedidos = ?';;
+        const [rows] = await connection.execute<RowDataPacket[]>(sql, idItemPedido);
+
+        if (rows.length === 0) return null;
+
+        const data = rows[0];
+
+        return new ItensPedido(
+            data.IdItens_Pedido,
+            data.fk_IdPedido,
+            data.fk_IdProduto,
+            Number(data.Valor),
+            Number(data.Quantidade)
+        )
     },
 
     // 3. ATUALIZAR ITEM (E RECALCULAR TOTAL)
@@ -81,12 +98,12 @@ export const itensPedidoRepository = {
 
             const sqlGetPedido = "SELECT FK_IdPedido FROM Itens_Pedido WHERE IdItem_Pedido = ?";
             const [row]: any = await conn.execute(sqlGetPedido, [item.id]);
-            
+
             if (row.length > 0) {
                 const idPedido = row[0].FK_IdPedido;
                 const sqlSoma = "SELECT SUM(Quantidade * Valor) as total FROM Itens_Pedido WHERE FK_IdPedido = ?";
                 const [soma]: any = await conn.execute(sqlSoma, [idPedido]);
-                
+
                 await conn.execute("UPDATE Pedidos SET ValorTotal = ? WHERE IdPedido = ?", [soma[0].total || 0, idPedido]);
             }
 
