@@ -1,4 +1,3 @@
-
 export default class Produto {
     private _idProduto: number | null;
     private _idCategoria: number;

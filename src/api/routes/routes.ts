@@ -1,10 +1,10 @@
 import { Router } from "express";
-import categoriaController from "../controllers/categoria";
-const categoriaRoutes = Router();
+import produtoController from "../controllers/produto.controller";
+const produtoRoutes = Router();
 
-categoriaRoutes.post('/', categoriaController.criar);
-categoriaRoutes.get('/', categoriaController.listar);
-categoriaRoutes.put('/', categoriaController.atualizar);
-categoriaRoutes.delete('/:id', categoriaController.excluir);
+produtoRoutes.post('/', produtoController.criar);
+produtoRoutes.get('/', produtoController.listar);
+produtoRoutes.put('/', produtoController.atualizar);
+produtoRoutes.delete('/:id', produtoController.excluir);
 
-export default categoriaRoutes;
+export default produtoRoutes;
