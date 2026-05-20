@@ -2,5 +2,6 @@ export enum enumStatusPedido {
     Pendente ='Pendente',
     Enviado = 'Enviado',
     Finalizado = 'Finalizado',
-    Cancelado = 'Cancelado'
+    Cancelado = 'Cancelado',
+    Pago = 'Pago'
 }
