@@ -16,7 +16,7 @@ const produtoController = {
                 });
             }
 
-            const caminhoImagem: string = `images/${reqFile.filename}`;
+            const caminhoImagem: string = `produtos/imagens/${reqFile.filename}`;
 
             const produto = Produto.criar({
                 idCategoria: Number(idCategoria),
