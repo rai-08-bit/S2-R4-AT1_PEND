@@ -1,71 +1,43 @@
 import { ResultSetHeader, RowDataPacket } from 'mysql2';
 import { connection } from '../configs/Database';
-import buildWhere from './helpers/buildWhere.repository';
 import Produto from '../models/Produtos';
 
 const produtoRepository = {
     create: async (produto: Produto): Promise<ResultSetHeader> => {
-        const sql = 'INSERT INTO produtos (IdCategoria, NomeProduto, DescricaoProduto, PrecoProduto, QuantidadeEstoque, VinculoImagem) VALUES (?,?,?,?,?)';
-        const values = [produto.idCategoria ,produto.nomeProduto, produto.descricaoProduto, produto.precoProduto, produto.quantidadeEstoque, produto.vinculoImagem];
+        const sql = 'INSERT INTO produtos (FK_IdCategoria, NomeProduto, DescricaoProduto, PrecoProduto, QuantidadeEstoque, VinculoImagem) VALUES (?,?,?,?,?,?)';
+        const values = [produto.idCategoria, produto.nomeProduto, produto.descricaoProduto, produto.precoProduto, produto.quantidadeEstoque, produto.vinculoImagem];
         const [rows] = await connection.execute<ResultSetHeader>(sql, values);
         return rows;
     },
-    read: async (
-        where?: Record<string, any>,
-        operator: 'AND' | 'OR' = 'AND'
-    ): Promise<RowDataPacket[]> => {
+    read: async (idProduto?: number): Promise<Produto[]> => {
+        let sql = `SELECT * FROM produtos WHERE 1=1`;
+        const params: any[] = [];
 
-        /**
-         * Query base.
-         * 
-         * O "WHERE 1=1" facilita a concatenação
-         * dinâmica de condições posteriormente.
-         */
-        let sql = `
-        SELECT *
-        FROM produtos
-        WHERE 1=1
-    `;
+        if (idProduto !== undefined) {
+            sql += ' AND idProduto = ?';
+            params.push(idProduto);
+        }
 
-        /**
-         * Monta dinamicamente:
-         * - cláusula WHERE
-         * - valores da query
-         * 
-         * Exemplo:
-         * {
-         *   clause: " AND (IdCategoria = ? AND Ativo = ?)",
-         *   values: [1, 1]
-         * }
-         */
-        const builtWhere = buildWhere(
-            where,
-            operator
+        const [rows] = await connection.execute<RowDataPacket[]>(sql, params);
+        const result: Produto[] = rows.map(element =>
+            new Produto(
+            element.IdProduto,
+            element.FK_IdCategoria,
+            element.NomeProduto,
+            element.DescricaoProduto,
+            element.PrecoProduto,
+            element.QuantidadeEstoque,
+            element.VinculoImagem,
+            element.dataCad,
+            element.dataMod
+            )
         );
 
-        /**
-         * Adiciona cláusulas dinâmicas na query.
-         */
-        sql += builtWhere.clause;
-
-        /**
-         * Executa query parametrizada.
-         * 
-         * O uso de "?" evita SQL Injection.
-         */
-        const [rows] = await connection.execute<RowDataPacket[]>(
-            sql,
-            builtWhere.values
-        );
-
-        /**
-         * Retorna os registros encontrados.
-         */
-        return rows;
+        return result;
     },
     update: async (produto: Produto): Promise<ResultSetHeader> => {
-        const sql = `UPDATE produtps SET NomeProduto=?, DescricaoProduto=?, PrecoProduto=?, QuantidadeEstoque=?, VinculoImagem=? WHERE IdCategoria=?`;
-        const values = [produto.idCategoria, produto.nomeProduto, produto.descricaoProduto, produto.precoProduto, produto.quantidadeEstoque, produto.vinculoImagem, produto.idProduto];
+        const sql = `UPDATE produtos SET NomeProduto=?, DescricaoProduto=?, PrecoProduto=?, QuantidadeEstoque=?, VinculoImagem=?, FK_IdCategoria=? WHERE IdProduto=?`;
+        const values = [produto.nomeProduto, produto.descricaoProduto, produto.precoProduto, produto.quantidadeEstoque, produto.vinculoImagem, produto.idCategoria,produto.idProduto];
         const [rows] = await connection.execute<ResultSetHeader>(sql, values);
         return rows;
     },

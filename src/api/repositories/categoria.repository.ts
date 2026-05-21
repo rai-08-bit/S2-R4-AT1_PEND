@@ -1,8 +1,6 @@
 import { ResultSetHeader, RowDataPacket } from 'mysql2';
 import { Categoria } from '../models/Categorias';
 import { connection } from '../configs/Database';
-import buildWhere from './helpers/buildWhere.repository';
-
 
 const categoriaRepository = {
     create: async (categoria: Categoria): Promise<ResultSetHeader> => {
@@ -11,77 +9,27 @@ const categoriaRepository = {
         const [rows] = await connection.execute<ResultSetHeader>(sql, values);
         return rows;
     },
-    /**
-         * Busca categorias no banco de dados.
-         * 
-         * @param where Objeto contendo os filtros da query
-         * Exemplo:
-         * {
-         *   IdCategoria: 1,
-         *   Ativo: 1
-         * }
-         * 
-         * @param operator Operador lógico entre os filtros
-         *
-         * Pode ser:
-         * - 'AND'
-         * - 'OR'
-         * 
-         * @returns Lista de categorias encontradas
-         */
+    read: async (idCategoria?: number): Promise<Categoria[]> => {
+        let sql = `SELECT * FROM categorias WHERE 1=1`;
+        const params: any[] = [];
 
-    read: async (
-        where?: Record<string, any>,
-        operator: 'AND' | 'OR' = 'AND'
-    ): Promise<RowDataPacket[]> => {
+        if (idCategoria !== undefined) {
+            sql += ' AND IdCategoria = ?';
+            params.push(idCategoria);
+        }
 
-        /**
-         * Query base.
-         * 
-         * O "WHERE 1=1" facilita a concatenação
-         * dinâmica de condições posteriormente.
-         */
-        let sql = `
-        SELECT *
-        FROM categorias
-        WHERE 1=1
-    `;
-
-        /**
-         * Monta dinamicamente:
-         * - cláusula WHERE
-         * - valores da query
-         * 
-         * Exemplo:
-         * {
-         *   clause: " AND (IdCategoria = ? AND Ativo = ?)",
-         *   values: [1, 1]
-         * }
-         */
-        const builtWhere = buildWhere(
-            where,
-            operator
+        const [rows] = await connection.execute<RowDataPacket[]>(sql, params);
+        const result: Categoria[] = rows.map(element =>
+            new Categoria(
+                element.IdCategoria,
+                element.NomeCategoria,
+                element.DescricaoCategoria,
+                element.dataCad,
+                element.dataMod
+            )
         );
 
-        /**
-         * Adiciona cláusulas dinâmicas na query.
-         */
-        sql += builtWhere.clause;
-
-        /**
-         * Executa query parametrizada.
-         * 
-         * O uso de "?" evita SQL Injection.
-         */
-        const [rows] = await connection.execute<RowDataPacket[]>(
-            sql,
-            builtWhere.values
-        );
-
-        /**
-         * Retorna os registros encontrados.
-         */
-        return rows;
+        return result;
     },
     update: async (categoria: Categoria): Promise<ResultSetHeader> => {
         const sql = 'UPDATE categorias SET NomeCategoria=?, DescricaoCategoria=? WHERE IdCategoria=?';
@@ -90,7 +38,7 @@ const categoriaRepository = {
         return rows;
     },
     delete: async (id: number): Promise<boolean> => {
-        const sql = 'DELETE FROM categoria WHERE idCategoria = ?';
+        const sql = 'DELETE FROM categorias WHERE idCategoria = ?';
         const [result] = await connection.execute<ResultSetHeader>(sql, [id]);
         return result.affectedRows > 0;
     }

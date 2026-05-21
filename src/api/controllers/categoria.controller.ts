@@ -26,28 +26,53 @@ const categoriaController = {
             }
             const categoria = Categoria.editar(id, { nome, descricao });
             const result = await categoriaRepository.update(categoria);
-            return Res.status(201).json({ message: 'Categoria incluída com sucesso', result })
+            return Res.status(201).json({ message: 'Categoria atualizada com sucesso', result })
 
         } catch (error: any) {
             console.error(error);
             Res.status(500).json({ message: 'Ocorreu um erro no servidor.', error: error.message })
         }
     },
-    listar: async (Req: Request, Res: Response) => {
+    listar: async (req: Request, res: Response) => {
         try {
-            const { ativo, nome } = Req.query;
-            const filtros: Record<string, any> = {};
+            const queryId = req.query.id;
 
-            if (ativo) filtros.Ativo = ativo;
-            if (nome) filtros.Nome = nome;
+            let idCategoria: number | undefined;
 
-            const categorias = await categoriaRepository.read(filtros, 'AND');
+            if (queryId) {
+                idCategoria = Number(queryId);
 
-            return Res.status(200).json(categorias);
+                if (isNaN(idCategoria)) {
+                    return res.status(400).json({
+                        error: true,
+                        message: "O ID fornecido deve ser um número válido."
+                    });
+                }
+            }
+
+            const categorias = await categoriaRepository.read(idCategoria);
+
+            if (!idCategoria && categorias.length === 0){
+                return res.status(404).json({
+                    message: "Não há nenhuma categoria registrada no banco de dados."
+                })
+            }
+
+            if (idCategoria && categorias.length === 0) {
+                return res.status(404).json({
+                    error: true,
+                    message: "Categoria não encontrada."
+                });
+            }
+
+            return res.status(200).json(categorias);
 
         } catch (error: any) {
-            console.error(error);
-            Res.status(500).json({ message: 'Ocorreu um erro no servidor.', error: error.message })
+            console.error("Erro na CategoriaController.read:", error);
+            return res.status(500).json({
+                error: true,
+                message: "Erro interno ao processar a requisição."
+            });
         }
     },
     excluir: async (Req: Request, Res: Response) => {
@@ -57,7 +82,7 @@ const categoriaController = {
                 return Res.status(400).json({ message: 'Digite corretamente o ID necessário' })
             }
             const result = await categoriaRepository.delete(id);
-            return Res.status(201).json({ message: 'Categoria incluída com sucesso', result })
+            return Res.status(201).json({ message: 'Categoria deletada com sucesso', result })
         } catch (error: any) {
             console.error(error);
             Res.status(500).json({ message: 'Ocorreu um erro no servidor.', error: error.message })

@@ -5,26 +5,25 @@ import Produto from "../models/Produtos";
 const produtoController = {
     criar: async (Req: Request, Res: Response) => {
         try {
-            const idCategoria: Number = Req.body.idCategoria;
-            const quantidade: Number = Req.body.quantidade;
-            const preco: Number = Req.body.preco;
-            const descricao: String = Req.body.descricao;
-            const nome: String = Req.body.nome;
 
-            if (!Req.file) {
+            const reqFile = Req.file as any;
+
+            const { idCategoria, nome, descricaoProduto, preco, quantidadeEstoque } = Req.body;
+
+            if (!reqFile) {
                 return Res.status(400).json({
                     message: 'Arquivo de imagem não enviado.'
                 });
             }
 
-            const caminhoImagem: string = `src/uploads/images/${Req.file.filename}`;
+            const caminhoImagem: string = `src/uploads/images/${reqFile.filename}`;
 
             const produto = Produto.criar({
                 idCategoria: Number(idCategoria),
                 nome: String(nome),
-                descricaoProduto: String(descricao),
+                descricaoProduto: String(descricaoProduto),
                 preco: Number(preco),
-                quantidadeEstoque: Number(quantidade),
+                quantidadeEstoque: Number(quantidadeEstoque),
                 vinculoImagem: caminhoImagem,
             });
 
@@ -34,9 +33,9 @@ const produtoController = {
                 message: 'Registro inserido com sucesso.',
                 produto: result,
                 file: {
-                    filename: Req.file.filename,
-                    size: Req.file.size,
-                    mimetype: Req.file.mimetype,
+                    filename: reqFile.filename,
+                    size: reqFile.size,
+                    mimetype: reqFile.mimetype,
                 }
             });
 
@@ -47,21 +46,32 @@ const produtoController = {
     atualizar: async (Req: Request, Res: Response) => {
         try {
 
-            const id  = Number(Req.params.id);
-            const { idCategoria, nomeProduto, descricaoProduto, precoProduto, quantidadeEstoque, vinculoImagem } = Req.body;
+            const reqFile = Req.file as any;
+
+            if (!reqFile) {
+                return Res.status(400).json({
+                    message: 'Arquivo de imagem não enviado.'
+                });
+            }
+
+            const id = Number(Req.params.id);
+
+            const { idCategoria, nomeProduto, descricaoProduto, precoProduto, quantidadeEstoque } = Req.body;
+
+            const caminhoImagem: string = `src/uploads/images/${reqFile.filename}`;
 
             if (!id) {
                 Res.status(400).json({ error: 'O ID do produto é obrigatório na URL.' });
                 return;
             };
-            
+
             const produtoAtualizado = Produto.editar(Number(id), {
                 idCategoria: Number(idCategoria),
                 nome: nomeProduto,
                 descricaoProduto,
                 preco: Number(precoProduto),
                 quantidadeEstoque: Number(quantidadeEstoque),
-                vinculoImagem
+                vinculoImagem: String(caminhoImagem)
             });
 
             const result = await produtoRepository.update(produtoAtualizado);
@@ -72,29 +82,40 @@ const produtoController = {
             }
 
             Res.status(200).json({
-                message: 'O produto foi atualizado com sucesso.', affectedRows: result.affectedRows});
+                message: 'O produto foi atualizado com sucesso.', affectedRows: result.affectedRows
+            });
 
         } catch (error: any) {
             return Res.status(400).json({ message: error.message });
         }
     },
-    listar: async (Req: Request, Res: Response) => {
+    listar: async (req: Request, res: Response) => {
         try {
-            const filtro = Req.query;
+            const id = req.query.id;
+            let idProduto: number | undefined;
 
-            const operator = (Req.query.operator as 'AND' | 'OR') || 'AND';
+            if (id) {
+                idProduto = Number(id);
+                if (isNaN(idProduto)) {
+                    return res.status(400).json({ error: true, message: "ID inválido." });
+                }
+            }
 
-            const whereClause = { ...filtro };
-            delete whereClause.operator;
+            const produtos = await produtoRepository.read(idProduto);
 
-            const produtos = await produtoRepository.read(
-                Object.keys(whereClause).length ? whereClause : undefined,
-                operator
-            );
+            if (idProduto && produtos.length === 0) {
+                return res.status(404).json({ error: true, message: "Produto não encontrado." });
+            }
 
-            Res.status(200).json(produtos);
+            if (!idProduto && produtos.length === 0) {
+                return res.status(404).json({ message: "Não há nenhum produto registrado no banco de dados." });
+            }
+
+            return res.status(200).json(produtos);
+
         } catch (error: any) {
-            return Res.status(400).json({ message: error.message });
+            console.error("Erro no ProdutoController.read:", error);
+            return res.status(500).json({ error: true, message: "Erro ao buscar produtos." });
         }
     },
     excluir: async (Req: Request, Res: Response) => {
@@ -103,7 +124,11 @@ const produtoController = {
             const id: number = Number(Req.params.id);
             const result = await produtoRepository.delete(id);
 
-            return Res.status(200).json({ message: 'O produto foi excluído com sucesso!', data: result });
+            if (result) {
+                return Res.status(200).json({ message: 'O produto foi excluído com sucesso!', data: result });
+            }
+
+            return Res.status(400).json({ message: 'O produto não foi encontrado no banco de dados.', data: result });
 
         } catch (error: any) {
             return Res.status(400).json({ message: error.message });

@@ -123,7 +123,7 @@ export default class Produto {
     // --- FACTORY METHODS ---
     static criar(dados: any) {
         return new Produto(
-            null, 
+            dados.idProduto || null, 
             dados.idCategoria,
             dados.nome,
             dados.descricaoProduto,

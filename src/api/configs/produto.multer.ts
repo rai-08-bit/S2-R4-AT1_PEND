@@ -51,4 +51,4 @@ const createMulter = ({ folder, allowedTypes, fileSize }: MulterConfig) => {
     })
 }
 
-export default createMulter
+export default createMulter;
