@@ -1,6 +1,5 @@
 import criarNavbar, { ativarMenu } from './components/layout/navbar.component';
 import { produtosCarrinhoPage } from './pages/carrinho.page.js';
-
 criarNavbar();
 produtosCarrinhoPage();
 
