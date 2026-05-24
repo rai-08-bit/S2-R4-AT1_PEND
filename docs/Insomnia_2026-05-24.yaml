@@ -1,0 +1,488 @@
+type: collection.insomnia.rest/5.0
+schema_version: "5.1"
+name: Full Stack
+meta:
+  id: wrk_5726e47143c54af79ec3bc05224ec3bf
+  created: 1779314170415
+  modified: 1779314170415
+  description: ""
+collection:
+  - name: Categorias
+    meta:
+      id: fld_d127fc1755a24f20bd9c884971f22036
+      created: 1779319466048
+      modified: 1779326214717
+      sortKey: -1779319466048
+      description: ""
+    children:
+      - url: http://localhost:8080/categorias
+        name: Create
+        meta:
+          id: req_6a43bd847e2a43f0ac21cbeadc7a25b9
+          created: 1779319471474
+          modified: 1779651704412
+          isPrivate: false
+          description: ""
+          sortKey: -1779319475075
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"nome": "Produtos para cabelo.",
+            	"descricao": "Produtos relacionado aos cuidados de suas madeixas."
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.5.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/categorias
+        name: Read
+        meta:
+          id: req_4806692df1954cf48ac22d14e8072029
+          created: 1779319500168
+          modified: 1779325201491
+          isPrivate: false
+          description: ""
+          sortKey: -1779319474975
+        method: GET
+        parameters:
+          - name: id
+            value: "1"
+            description: ""
+            disabled: false
+        headers:
+          - name: User-Agent
+            value: insomnia/12.5.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/categorias
+        name: Update
+        meta:
+          id: req_3e59f43ca4cb4cecb5b3300fa8fb0511
+          created: 1779319509552
+          modified: 1779325204473
+          isPrivate: false
+          description: ""
+          sortKey: -1779319474875
+        method: PUT
+        body:
+          mimeType: application/json
+          text: >-
+            {
+            	"nome": "Livros de Poemas",
+            	"descricao": "Livros retratando os mais variados escritores e estilos dentro da arte da poesia escrita."
+            }
+        parameters:
+          - name: id
+            value: "1"
+            description: ""
+            disabled: false
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.5.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/categorias/2
+        name: Delete
+        meta:
+          id: req_00be015e17f44cb2948d451ec1f0b2d2
+          created: 1779319531323
+          modified: 1779325206705
+          isPrivate: false
+          description: ""
+          sortKey: -1779319474775
+        method: DELETE
+        headers:
+          - name: User-Agent
+            value: insomnia/12.5.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Produtos
+    meta:
+      id: fld_2aef86c480b841dea900e5e8ceef022e
+      created: 1779320203641
+      modified: 1779326212656
+      sortKey: -1779320203641
+      description: ""
+    children:
+      - url: http://localhost:8080/produtos/1
+        name: Delete
+        meta:
+          id: req_6ae5ba336ef04b538786716aef14ec25
+          created: 1779320296061
+          modified: 1779325766185
+          isPrivate: false
+          description: ""
+          sortKey: -1779320296061
+        method: DELETE
+        headers:
+          - name: User-Agent
+            value: insomnia/12.5.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/produtos/2
+        name: Update
+        meta:
+          id: req_531c98530b6c4ff6a04ea0d21b7c1345
+          created: 1779320299913
+          modified: 1779326014004
+          isPrivate: false
+          description: ""
+          sortKey: -1779320299913
+        method: PUT
+        body:
+          mimeType: multipart/form-data
+          params:
+            - name: image
+              value: ""
+              fileName: D:\Ordem\Icons\Icons Single\2973090.jpeg
+              type: file
+            - name: idCategoria
+              value: "1"
+              description: ""
+              disabled: false
+            - name: precoProduto
+              value: "10000"
+              description: ""
+              disabled: false
+            - name: quantidadeEstoque
+              value: "3"
+              description: ""
+              disabled: false
+            - name: descricaoProduto
+              value: VARIOS PLUSHES FODASSA
+              description: ""
+              disabled: false
+            - name: nomeProduto
+              value: Plushie Lain & Rei
+              description: ""
+              disabled: false
+        headers:
+          - name: Content-Type
+            value: multipart/form-data
+          - name: User-Agent
+            value: insomnia/12.5.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/produtos
+        name: Read
+        meta:
+          id: req_c4d5f4be6d874275ad976a006bccec9f
+          created: 1779320301233
+          modified: 1779325194036
+          isPrivate: false
+          description: ""
+          sortKey: -1779320301233
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.5.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/produtos
+        name: Create
+        meta:
+          id: req_548c17d8311e4c8bbdd084be198327eb
+          created: 1779320302396
+          modified: 1779651780374
+          isPrivate: false
+          description: ""
+          sortKey: -1779320302396
+        method: POST
+        body:
+          mimeType: multipart/form-data
+          params:
+            - name: image
+              value: ""
+              description: ""
+              disabled: false
+              fileName: C:\Users\User\Desktop\17334842.png
+              type: file
+            - name: idCategoria
+              value: "6"
+              description: ""
+              disabled: false
+            - name: preco
+              value: "35.90"
+              description: ""
+              disabled: false
+            - name: quantidadeEstoque
+              value: "800"
+              description: ""
+              disabled: false
+            - name: descricaoProduto
+              value: Shampoo muito bom para o seu cabelo.
+              description: ""
+              disabled: false
+            - name: nome
+              value: Super shampoo.
+              description: ""
+              disabled: false
+              multiline: false
+              type: text
+        headers:
+          - name: Content-Type
+            value: multipart/form-data
+          - name: User-Agent
+            value: insomnia/12.5.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+  - name: Pedidos
+    meta:
+      id: fld_a34cfc4b5e1d469a889428e48989146e
+      created: 1779326292897
+      modified: 1779326292897
+      sortKey: -1779326292897
+      description: ""
+    children:
+      - url: http://localhost:8080/pedidos/9
+        name: Delete
+        meta:
+          id: req_10ad8c3820894cb8a49519d3a9943d9d
+          created: 1779326296473
+          modified: 1779654670533
+          isPrivate: false
+          description: ""
+          sortKey: -1779326296473
+        method: DELETE
+        headers:
+          - name: User-Agent
+            value: insomnia/12.5.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/pedidos/adicao/11
+        name: Update Add
+        meta:
+          id: req_267f21aaa5f74eeea09a2c89284e774e
+          created: 1779326299902
+          modified: 1779657461150
+          isPrivate: false
+          description: ""
+          sortKey: -1779326296573
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"idProduto": 2,
+            	"quantidade": 1,
+            	"valor": 20
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.5.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/pedidos/remocao/10/11
+        name: Update Remove
+        meta:
+          id: req_1c8e5fbc084348dfaaf567bd5a6f8a24
+          created: 1779326328733
+          modified: 1779655145166
+          isPrivate: false
+          description: ""
+          sortKey: -1779326328733
+        method: PUT
+        headers:
+          - name: User-Agent
+            value: insomnia/12.5.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/pedidos/status/10
+        name: Update Status
+        meta:
+          id: req_7361684a657d475aa1109d0e82df3b37
+          created: 1779326331391
+          modified: 1779654839648
+          isPrivate: false
+          description: ""
+          sortKey: -1779326331391
+        method: PUT
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"status": "cancelado"
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.5.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/pedidos
+        name: Read
+        meta:
+          id: req_4d1c9fdc2333423a90e37bec4e25b918
+          created: 1779326332762
+          modified: 1779654686592
+          isPrivate: false
+          description: ""
+          sortKey: -1779326332762
+        method: GET
+        headers:
+          - name: User-Agent
+            value: insomnia/12.5.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+      - url: http://localhost:8080/pedidos
+        name: Create
+        meta:
+          id: req_dbd69c08b9af47b9aba3d7a143fc2a0b
+          created: 1779326334197
+          modified: 1779652763679
+          isPrivate: false
+          description: ""
+          sortKey: -1779326334197
+        method: POST
+        body:
+          mimeType: application/json
+          text: |-
+            {
+            	"status": "",
+            	"itens": [
+            		{"idProduto": 2, "valor":35.9, "quantidade": 14},
+            		{"idProduto": 3, "valor":99.9, "quantidade": 2}
+            	]
+            }
+        headers:
+          - name: Content-Type
+            value: application/json
+          - name: User-Agent
+            value: insomnia/12.5.0
+            description: ""
+            disabled: false
+        settings:
+          renderRequestBody: true
+          encodeUrl: true
+          followRedirects: global
+          cookies:
+            send: true
+            store: true
+          rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_3fe688a95af79c75046349306a9f8f83ef23b99d
+    created: 1779314170422
+    modified: 1779314170422
+environments:
+  name: Base Environment
+  meta:
+    id: env_3fe688a95af79c75046349306a9f8f83ef23b99d
+    created: 1779314170419
+    modified: 1779314170419
+    isPrivate: false
