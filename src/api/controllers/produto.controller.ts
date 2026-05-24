@@ -8,7 +8,7 @@ const produtoController = {
 
             const reqFile = Req.file as any;
 
-            const { idCategoria, nome, descricaoProduto, preco, quantidadeEstoque } = Req.body;
+            const { idCategoria, nomeProduto, descricaoProduto, precoProduto, quantidadeEstoque } = Req.body;
 
             if (!reqFile) {
                 return Res.status(400).json({
@@ -16,13 +16,13 @@ const produtoController = {
                 });
             }
 
-            const caminhoImagem: string = `src/uploads/images/${reqFile.filename}`;
+            const caminhoImagem: string = `images/${reqFile.filename}`;
 
             const produto = Produto.criar({
                 idCategoria: Number(idCategoria),
-                nome: String(nome),
+                nome: String(nomeProduto),
                 descricaoProduto: String(descricaoProduto),
-                preco: Number(preco),
+                preco: Number(precoProduto),
                 quantidadeEstoque: Number(quantidadeEstoque),
                 vinculoImagem: caminhoImagem,
             });
