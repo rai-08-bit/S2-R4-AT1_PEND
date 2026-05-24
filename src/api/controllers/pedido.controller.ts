@@ -16,7 +16,7 @@ export const pedidoController = {
             }
 
             const listaItens = itens.map(item => ItensPedido.criar({
-                produtoId: item.produtoId,
+                produtoId: item.idProduto,
                 valor: item.valor,
                 quantidade: item.quantidade
             }));
@@ -25,8 +25,8 @@ export const pedidoController = {
 
 
             const novoPedido = new Pedidos(
-                null, 
-                subTotalCalculado, 
+                null,
+                subTotalCalculado,
                 status || enumStatusPedido.Pendente,
                 new Date().toISOString(),
                 new Date().toISOString()
@@ -37,7 +37,8 @@ export const pedidoController = {
             return Res.status(201).json({
                 message: 'Pedido finalizado com sucesso!',
                 pedidoId: result.pedidoId,
-                total: result.subTotal
+                total: result.subTotal,
+                itensPedidoId: result.ItensInseridos
             });
 
         } catch (error: any) {
@@ -49,17 +50,23 @@ export const pedidoController = {
     atualizarAddItem: async (Req: Request, Res: Response) => {
         try {
             const idPedido = Number(Req.params.idPedido);
-            const { produtoId, quantidade, valor } = Req.body;
+            const { idProduto, quantidade, valor } = Req.body;
 
             const dadosAtuais = await pedidoRepository.read(idPedido);
             if (!dadosAtuais || dadosAtuais.length === 0) {
                 return Res.status(404).json({ message: 'Pedido não encontrado.' });
             }
 
-            const novoItem = ItensPedido.criar({ idPedido, produtoId, quantidade, valor });
+            const novoItem = ItensPedido.criar({
+                id: null,
+                pedidoId: idPedido,
+                produtoId: idProduto,
+                valor: valor,
+                quantidade: quantidade,
+            });
 
 
-            const novoSubTotal = Number(dadosAtuais[0].SubTotal) + (novoItem.valor * novoItem.quantidade);
+            const novoSubTotal = Number(dadosAtuais[0].ValorTotal) + (novoItem.valor * novoItem.quantidade);
 
             const pedidoAtualizado = new Pedidos(idPedido, novoSubTotal, dadosAtuais[0].Status, dadosAtuais[0].DataCad, new Date().toISOString());
 
@@ -84,19 +91,44 @@ export const pedidoController = {
             }
 
             const pedidoDados = await pedidoRepository.read(idPedido);
-            const subTotalAntigo = Number(pedidoDados[0].SubTotal);
+            if (!pedidoDados || pedidoDados.length === 0) {
+                return Res.status(404).json({ message: 'Pedido pai não encontrado.' });
+            }
+
+            const subTotalAntigo = Number(pedidoDados[0].ValorTotal);
             const valorSubtrair = itemRemover.valor * itemRemover.quantidade;
-            
-            const novoSubTotal = subTotalAntigo - valorSubtrair;
 
-            const pedidoAtualizado = new Pedidos(idPedido, novoSubTotal > 0 ? novoSubTotal : 0.01, pedidoDados[0].Status, pedidoDados[0].DataCad, new Date().toISOString());
+            let novoSubTotal = subTotalAntigo - valorSubtrair;
+            novoSubTotal = Math.round(novoSubTotal * 100) / 100;
 
-            await pedidoRepository.updateRemocao(idItem, pedidoAtualizado);
+            if (novoSubTotal <= 0) {
+                return Res.status(400).json({
+                    message: 'Não é possível excluir o item, pois o pedido não pode ficar sem itens ou com valor zero.'
+                });
+            }
 
-            return Res.status(200).json({ message: 'Item removido.' });
+            const pedidoAtualizado = new Pedidos(
+                idPedido,
+                novoSubTotal,
+                pedidoDados[0].StatusPedido,
+                pedidoDados[0].DataCad,
+                new Date().toISOString()
+            );
+
+            const sucesso = await pedidoRepository.updateRemocao(idItem, pedidoAtualizado);
+
+            if (sucesso) {
+                return Res.status(200).json({
+                    message: 'Item removido com sucesso.',
+                    novoTotal: novoSubTotal
+                });
+            } else {
+                return Res.status(500).json({ message: 'Falha ao remover o item no banco de dados.' });
+            }
 
         } catch (error: any) {
-            return Res.status(400).json({ message: error.message });
+            console.error("Erro no Controller atualizarRemItem:", error);
+            return Res.status(500).json({ message: 'Erro interno ao processar a remoção.' });
         }
     },
 
@@ -106,8 +138,6 @@ export const pedidoController = {
             const idPedido = Number(Req.params.id);
             const { status } = Req.body;
 
-            const pedidoFake = new Pedidos(idPedido, 10, status, '', ''); 
-            
             await pedidoRepository.updateStatus(status as enumStatusPedido, idPedido);
             return Res.status(200).json({ message: 'Status atualizado.' });
 
@@ -127,29 +157,29 @@ export const pedidoController = {
             const excluiu = await pedidoRepository.delete(id);
 
             if (!excluiu) {
-                return Res.status(404).json({ 
-                    message: 'Não foi possível excluir. Pedido não encontrado.' 
+                return Res.status(404).json({
+                    message: 'Não foi possível excluir. Pedido não encontrado.'
                 });
             }
 
-            return Res.status(200).json({ 
-                message: `Pedido ${id} e seus itens foram removidos com sucesso.` 
+            return Res.status(200).json({
+                message: `Pedido ${id} e seus itens foram removidos com sucesso.`
             });
 
         } catch (error: any) {
             console.error("Erro ao deletar pedido:", error);
-            return Res.status(500).json({ 
-                message: 'Erro interno ao tentar excluir o pedido.', 
-                error: error.message 
+            return Res.status(500).json({
+                message: 'Erro interno ao tentar excluir o pedido.',
+                error: error.message
             });
         }
     },
     listar: async (Req: Request, Res: Response) => {
         try {
-            const id = Req.params.id ? Number(Req.params.id) : undefined;
+            const id = Number(Req.query.id);
 
             // Se o usuário passou um ID mas não é um número válido
-            if (Req.params.id && isNaN(id as number)) {
+            if (Req.params.id && isNaN(id) || id <= 0) {
                 return Res.status(400).json({ message: 'O ID fornecido é inválido.' });
             }
 
@@ -164,9 +194,9 @@ export const pedidoController = {
 
         } catch (error: any) {
             console.error("Erro ao ler pedidos:", error);
-            return Res.status(500).json({ 
-                message: 'Erro ao buscar dados no banco.', 
-                error: error.message 
+            return Res.status(500).json({
+                message: 'Erro ao buscar dados no banco.',
+                error: error.message
             });
         }
     },

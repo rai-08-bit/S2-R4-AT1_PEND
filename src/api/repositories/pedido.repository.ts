@@ -10,21 +10,23 @@ const pedidoRepository = {
         try {
             await conn.beginTransaction();
 
-            const sqlPed = 'INSERT INTO pedidos ( SubTotal, Status) VALUES (?,?,?)';
+            const sqlPed = 'INSERT INTO pedidos ( ValorTotal, StatusPedido) VALUES (?,?)';
             const valuesPed = [pedido.subTotal, pedido.status];
             const [rowsPed] = await conn.execute<ResultSetHeader>(sqlPed, valuesPed);
 
             const novoIdPedido = rowsPed.insertId;
-
+            const novoItensPedido: Number[] = []
 
             for (const item of itens_Pedido) {
-                const sqlItm = 'INSERT INTO itens_pedido (fk_IdPedido, fk_IdProduto, Quantidade, Valor) VALUES (?,?,?,?)';
-                const valuesItm = [novoIdPedido, item.produtoId, item.quantidade, item.valor];
-                await conn.execute(sqlItm, valuesItm);
+                const sqlItm = 'INSERT INTO itens_pedido (FK_IdPedido, FK_IdProduto, Quantidade, Valor) VALUES (?,?,?,?)';
+                const valuesItm = [novoIdPedido, item.produtoId, item.quantidade, item.valor*item.quantidade];
+                console.log(valuesItm)
+                const [insercao] = await conn.execute<ResultSetHeader>(sqlItm, valuesItm);
+                novoItensPedido.push(insercao.insertId)
             }
 
             await conn.commit();
-            return { pedidoId: novoIdPedido, subTotal: pedido.subTotal }; 
+            return { pedidoId: novoIdPedido, subTotal: pedido.subTotal, itensInseridos: novoItensPedido }; 
         } catch (error) {
             await conn.rollback();
             throw error;
@@ -54,7 +56,7 @@ const pedidoRepository = {
 
     // 3. ATUALIZAR STATUS
     updateStatus: async (Status: enumStatusPedido, IdPedido: number): Promise<boolean> => {
-        const sql = 'UPDATE pedidos SET Status = ? WHERE IdPedido = ?';
+        const sql = 'UPDATE pedidos SET StatusPedido = ? WHERE IdPedido = ?';
         const [rows] = await connection.execute<ResultSetHeader>(sql, [Status, IdPedido]);
         return rows.affectedRows > 0;
     },
@@ -65,11 +67,11 @@ const pedidoRepository = {
         try {
             await conn.beginTransaction();
 
-            const sqlRemocao = 'DELETE FROM itens_pedido WHERE IdItens_Pedido = ?';
+            const sqlRemocao = 'DELETE FROM itens_pedido WHERE IdItem_Pedido = ?';
             const [resultDelete] = await conn.execute<ResultSetHeader>(sqlRemocao, [IdItemPedido]);
 
-            const sqlUpdatePedido = 'UPDATE pedidos SET SubTotal = ? WHERE IdPedido = ?';
-            await conn.execute(sqlUpdatePedido, [pedidoAtualizado.subTotal, pedidoAtualizado.id]);
+            const sqlUpdatePedido = 'UPDATE pedidos SET ValorTotal = ? WHERE IdPedido = ?';
+            await conn.execute(sqlUpdatePedido, [pedidoAtualizado.subTotal, pedidoAtualizado.idPedido]);
 
             await conn.commit();
             return resultDelete.affectedRows > 0;
@@ -87,11 +89,10 @@ const pedidoRepository = {
         try {
             await conn.beginTransaction();
 
-            // Insere o novo item
-            const sqlItm = 'INSERT INTO itens_pedido (fk_IdPedido, fk_IdProduto, Quantidade, Valor) VALUES (?,?,?,?)';
+            const sqlItm = 'INSERT INTO itens_pedido (FK_IdPedido, FK_IdProduto, Quantidade, Valor) VALUES (?,?,?,?)';
             await conn.execute(sqlItm, [IdPedido, item.produtoId, item.quantidade, item.valor]);
 
-            const sqlUpdatePedido = 'UPDATE pedidos SET SubTotal = ? WHERE IdPedido = ?';
+            const sqlUpdatePedido = 'UPDATE pedidos SET ValorTotal = ? WHERE IdPedido = ?';
             await conn.execute(sqlUpdatePedido, [pedidoAtualizado.subTotal, IdPedido]);
 
             await conn.commit();
@@ -109,8 +110,7 @@ const pedidoRepository = {
         const conn = await connection.getConnection();
         try {
             await conn.beginTransaction();
-            // Deleta filhos primeiro por causa da FK
-            await conn.execute('DELETE FROM itens_pedido WHERE fk_IdPedido=?', [IdPedido]);
+            await conn.execute('DELETE FROM itens_pedido WHERE FK_IdPedido=?', [IdPedido]);
             const [rowsPed] = await conn.execute<ResultSetHeader>('DELETE FROM pedidos WHERE IdPedido=?', [IdPedido]);
 
             await conn.commit();
@@ -124,7 +124,7 @@ const pedidoRepository = {
     },
 
     findById: async (idItem: number): Promise<ItensPedido | null> => {
-        const sql = 'SELECT * FROM itens_pedido WHERE IdItens_Pedido = ?';
+        const sql = 'SELECT * FROM itens_pedido WHERE IdItem_Pedido = ?';
         const [rows] = await connection.execute<RowDataPacket[]>(sql, [idItem]);
 
         if (rows.length === 0) return null;
@@ -135,7 +135,9 @@ const pedidoRepository = {
             data.fk_IdPedido,
             data.fk_IdProduto,
             Number(data.Valor),
-            Number(data.Quantidade)
+            Number(data.Quantidade),
+            data.DataCad,
+            data.DataMod
         );
     }
 };

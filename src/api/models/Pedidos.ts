@@ -9,7 +9,7 @@ export class Pedidos {
 
     // --- CONSTRUCTOR --- 
     constructor(
-        idPedido: number | null = null,
+        idPedido: number | null,
         subTotal: number = 0,
         status: enumStatusPedido = enumStatusPedido.Pendente,
         dataCad: string,
@@ -82,13 +82,14 @@ export class Pedidos {
     // --- FACTORY METHODS ---
     static criar(dados: any) {
         return new Pedidos(
+            dados.idPedido,
             dados.subTotal,
             dados.status,
-            dados.idPedido,
             dados.dataCad,
             dados.dataMod);
     }
+
     static editar(dados: any, id: number) {
-        return new Pedidos(id, dados.subTotal, dados.status, dados.dataCad, dados.dataMod);
+        return new Pedidos(id, dados.subTotal, dados.status, dados.dataCad, new Date().toISOString());
     }
 }
