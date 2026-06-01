@@ -1,6 +1,7 @@
 import criarColuna from '../components/shared/column-bootstrap.component';
-import { listarCarrinho } from '../storage/produto/carrinho.storage';
+import { listarCarrinho, removerProduto } from '../storage/produto/carrinho.storage';
 import criarCardProduto from '../components/produto/card.component';
+import { finalizarPedido } from '../services/produtos/pedidos.api';
 
 export default async function produtosCarrinhoPage() {
     const app = document.querySelector('#app');
@@ -9,28 +10,77 @@ export default async function produtosCarrinhoPage() {
     <h1 class="fw-bold text-primary">🛒 Carrinho</h1>
     <div class="row mt-4" id="lista-carrinho"></div>
     <div id="paginacao"></div>
+    <div class="mt-4">
+        <button id="btn-finalizar" class="btn btn-success btn-lg">
+            ✅ Finalizar Pedido
+        </button>
+    </div>
     `;
 
     const row = document.querySelector('#lista-carrinho');
 
+    // Map para acessar o qtdControle de cada produto pelo idProduto
+    const qtdControleMap = new Map();
+
     const produtos = listarCarrinho();
-    produtos.forEach(
-        produto => {
-            const coluna = criarColuna();
-            const card = criarCardProduto(produto);
 
-            const button = card.querySelector('button');
+    produtos.forEach(produto => {
+        const coluna = criarColuna();
+        const card = criarCardProduto(produto);
 
-            button.addEventListener('click', () => {
-                coluna.remove();
-            });
-            const seletorQuantidade = qtdProdutos(produto);
-
-            card.appendChild(seletorQuantidade);
-
-            coluna.appendChild(card);
-            row.appendChild(coluna);
+        const button = card.querySelector('button');
+        button.addEventListener('click', () => {
+            removerProduto(produto);
+            coluna.remove();
         });
+
+        const seletorQuantidade = qtdProdutos(produto);
+
+        // Guarda referência ao controle de quantidade pelo id do produto
+        qtdControleMap.set(produto._idProduto, {
+            seletor: seletorQuantidade,
+            produto: produto
+        });
+
+        card.appendChild(seletorQuantidade);
+        coluna.appendChild(card);
+        row.appendChild(coluna);
+    });
+
+    // Botão finalizar pedido
+    document.querySelector('#btn-finalizar').addEventListener('click', async (event) => {
+        if (qtdControleMap.size === 0) {
+            alert('Seu carrinho está vazio!');
+            return;
+        }
+
+        const botao = event.currentTarget;
+
+        const itens = Array.from(qtdControleMap.values()).map(({ seletor, produto }) => ({
+            idProduto: produto._idProduto,
+            valor: produto._precoProduto,
+            quantidade: seletor.getQuantidade()
+        }));
+
+        try {
+            botao.disabled = true;
+            botao.textContent = 'Processando...';
+        
+            const { pedidoId, total } = await finalizarPedido(itens);
+        
+            alert(`Pedido #${pedidoId} criado! Total: R$ ${total}`);
+
+            listarCarrinho().forEach(produto => removerProduto(produto));
+            produtosCarrinhoPage();
+
+        } catch (error) {
+            console.error('Erro ao finalizar pedido:', error);
+            alert('Não foi possível finalizar o seu pedido. Tente novamente em instantes.');
+        } finally {
+            botao.disabled = false;
+            botao.textContent = 'Finalizar Pedido';
+        }
+    });
         
     function qtdProdutos(produto, qtdI = 1) {
         const maxQtd = produto._quantidadeEstoque;

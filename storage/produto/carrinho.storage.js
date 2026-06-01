@@ -21,7 +21,7 @@ export function removerProduto(produto) {
     const carrinho = listarCarrinho();
 
     const carrinhoAtualizado = carrinho.filter(
-        car => car.idProduto !== produto.idProduto
+        car => car._idProduto !== produto._idProduto
     );
 
     atualizarLocalStorage(carrinhoAtualizado);
@@ -31,6 +31,6 @@ export function estaNoCarrinho(produto) {
     const carrinho = listarCarrinho();
     
     return carrinho.some(
-        car => car.idProduto === produto.idProduto
+        car => car._idProduto === produto._idProduto
     );
 }
