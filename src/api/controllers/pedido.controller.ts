@@ -38,7 +38,7 @@ export const pedidoController = {
                 message: 'Pedido finalizado com sucesso!',
                 pedidoId: result.pedidoId,
                 total: result.subTotal,
-                itensPedidoId: result.ItensInseridos
+                itensPedidoId: result.itensInseridos
             });
 
         } catch (error: any) {
