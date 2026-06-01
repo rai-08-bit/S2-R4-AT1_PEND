@@ -3,7 +3,7 @@ const API_URL = `http://localhost:8080`;
 
 export async function finalizarPedido(itens) {
     const body = {
-        status: "Pendente",
+        status: "pendente",
         itens: itens.map(item => ({
             idProduto: Number(item.idProduto),
             valor: Number(item.valor),
