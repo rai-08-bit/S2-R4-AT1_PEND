@@ -8,7 +8,7 @@ const imagemController = {
     try {
       const { nomeArquivo } = req.params;
 
-      const caminhoCompleto = path.join(__dirname, '../../../uploads/images', String(nomeArquivo));
+      const caminhoCompleto = path.join(__dirname, '../../../uploads/produtos/imagens', String(nomeArquivo));
 
 
       return res.sendFile(caminhoCompleto, (error) => {

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import produtoRepository from "../repositories/produto.repository";
 import Produto from "../models/Produtos";
+import fs from "node:fs/promises"
 
 const produtoController = {
     criar: async (Req: Request, Res: Response) => {
@@ -121,14 +122,23 @@ const produtoController = {
     excluir: async (Req: Request, Res: Response) => {
         try {
 
-            const id: number = Number(Req.params.id);
+        const id: number = Number(Req.params.id);
+        const produtos = await produtoRepository.read(id);
+        
+        if (!produtos || produtos.length === 0) {
+            return Res.status(404).json({ message: 'O produto não foi encontrado no banco de dados.' });
+        }
+
+        const produto = produtos[0];
+
+        await fs.unlink(`./uploads/${produto.vinculoImagem}`);
             const result = await produtoRepository.delete(id);
 
-            if (result) {
-                return Res.status(200).json({ message: 'O produto foi excluído com sucesso!', data: result });
-            }
+        if (result) {
+            return Res.status(200).json({ message: 'O produto foi excluído com sucesso!', data: result });
+        }
 
-            return Res.status(400).json({ message: 'O produto não foi encontrado no banco de dados.', data: result });
+
 
         } catch (error: any) {
             return Res.status(400).json({ message: error.message });
