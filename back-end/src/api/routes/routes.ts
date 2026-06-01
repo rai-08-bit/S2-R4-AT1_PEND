@@ -8,6 +8,6 @@ import imagemRoutes from './imagemProduto.routes';
 routes.use('/categorias', categoriaRoutes);
 routes.use('/produtos', produtoRoutes);
 routes.use('/pedidos', pedidoRoutes);
-routes.use('/produtos/imagens', imagemRoutes)
+routes.use('/produtos/images', imagemRoutes)
 
 export default routes;

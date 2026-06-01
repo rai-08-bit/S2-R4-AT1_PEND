@@ -65,24 +65,11 @@ export default function criarCardProduto(produto, onCarrinhoAlterado) {
     nome.innerText = produto._nomeProduto;
 
     const preco = document.createElement('p');
-    preco.className = 'text-success fw-bold';
+    preco.className = 'fw-bold';
     preco.innerText = 'R$ ' + produto._precoProduto;
 
-    // botão ação (add/remover)
-    const btnAcao = document.createElement('button');
-    btnAcao.className = 'btn btn-primary w-100';
-    btnAcao.innerText = produto.acao || 'Adicionar';
 
-    btnAcao.addEventListener('click', () => {
-        if (typeof onCarrinhoAlterado === 'function') {
-            onCarrinhoAlterado({
-                produto,
-                acao: 'click'
-            });
-        }
-    });
-
-    cardBody.append(nome, preco, btnAcao);
+    cardBody.append(nome, preco);
 
     card.append(imageContainer, cardBody);
 

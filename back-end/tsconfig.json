@@ -2,16 +2,16 @@
   "compilerOptions": {
     "target": "ES2023",
     "module": "commonjs",
-    "moduleResolution":"node",
+    "moduleResolution": "node",
     "lib": ["ES2023"],
     "esModuleInterop": true,
     "strict": true,
     "skipLibCheck": true,
     "types": ["node", "express", "multer"],
     "outDir": "./dist",
-    "rootDir": "back-end/src",
+    "rootDir": "./src", 
     "sourceMap": true,
     "ignoreDeprecations": "6.0"
   },
-  "include": ["back-end/src/api"]
+  "include": ["src/**/*"]
 }
