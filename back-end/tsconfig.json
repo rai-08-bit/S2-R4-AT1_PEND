@@ -9,9 +9,9 @@
     "skipLibCheck": true,
     "types": ["node", "express", "multer"],
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": "back-end/src",
     "sourceMap": true,
     "ignoreDeprecations": "6.0"
   },
-  "include": ["src/api"]
+  "include": ["back-end/src/api"]
 }
