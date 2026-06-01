@@ -1,7 +1,7 @@
 export class ItensPedido {
     private _id: number | null;
-    private _pedidoId: number;
-    private _produtoId: number;
+    private _idPedido: number;
+    private _idProduto: number;
     private _quantidade: number;
     private _valor: number;
     private _dataCad: string;
@@ -12,7 +12,9 @@ export class ItensPedido {
         pedidoId: number = 0,
         produtoId: number = 0,
         valor: number = 0,
-        quantidade: number = 0
+        quantidade: number = 0,
+        dataCad: string,
+        dataMod: string
     ) {
         // Validações disparadas na construção do objeto
         if (id !== null) this.validarId(id);
@@ -22,24 +24,24 @@ export class ItensPedido {
         this.validarQuantidade(quantidade);
 
         this._id = id;
-        this._pedidoId = pedidoId;
-        this._produtoId = produtoId;
+        this._idPedido = pedidoId;
+        this._idProduto = produtoId;
         this._valor = valor;
         this._quantidade = quantidade;
-        this._dataCad = new Date().toISOString();
-        this._dataMod = new Date().toISOString();
+        this._dataCad = dataCad || new Date().toISOString();
+        this._dataMod = dataMod || new Date().toISOString();
     }
 
-    // --- Getters ---
+    // ---GETTERS--
     get id(): number | null { return this._id; }
-    get pedidoId(): number { return this._pedidoId; }
-    get produtoId(): number { return this._produtoId; }
+    get pedidoId(): number { return this._idPedido; }
+    get produtoId(): number { return this._idProduto; }
     get valor(): number { return this._valor; }
     get quantidade(): number { return this._quantidade; }
     get dataCad(): string { return this._dataCad; }
     get dataMod(): string { return this._dataMod; }
 
-    // --- Setters com Validações Corrigidas ---
+    // --- SETTERS ---
     set id(value: number | null) {
         if (value !== null) this.validarId(value);
         this._id = value;
@@ -47,13 +49,13 @@ export class ItensPedido {
 
     set pedidoId(value: number) {
         this.validarIdAuxiliar(value);
-        this._pedidoId = value; 
+        this._idPedido = value; 
         console.log("TESTE");
     }
 
     set produtoId(value: number) {
         this.validarIdAuxiliar(value);
-        this._produtoId = value;
+        this._idProduto = value;
     }
 
     set valor(value: number) {
@@ -93,17 +95,19 @@ export class ItensPedido {
 
     // --- STATIC METHODS ---
     static calcularSubTotal(itens: ItensPedido[]): number {
-        return itens.reduce((total, item) => total + (item.valor * item.quantidade), 0);
+        return Math.round((itens.reduce((total, item) => total + (item.valor * item.quantidade), 0) * 100) / 100);
     }
 
     // --- FACTORY METHODS ---
     static criar(dados: any): ItensPedido {
         return new ItensPedido(
-            null, 
+            dados.id || null, 
             dados.pedidoId || 0, 
             dados.produtoId, 
             dados.valor, 
-            dados.quantidade
+            dados.quantidade,
+            dados.dataCad,
+            dados.dataMod
         );
     }
 
@@ -113,7 +117,9 @@ export class ItensPedido {
             dados.pedidoId, 
             dados.produtoId, 
             dados.valor, 
-            dados.quantidade
+            dados.quantidade,
+            dados.dataCad,
+            dados.dataMod
         );
     }
 }

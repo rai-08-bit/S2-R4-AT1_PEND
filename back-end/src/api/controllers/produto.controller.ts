@@ -20,7 +20,7 @@ const produtoController = {
 
             const produto = Produto.criar({
                 idCategoria: Number(idCategoria),
-                nome: String(nomeProduto),
+                nome: nomeProduto,
                 descricaoProduto: String(descricaoProduto),
                 preco: Number(precoProduto),
                 quantidadeEstoque: Number(quantidadeEstoque),
